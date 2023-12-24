@@ -16,6 +16,8 @@ class GameActivity : AppCompatActivity(),View.OnClickListener {
         binding=ActivityGameBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        GameData.fetchGameModel()
+
         binding.btn0.setOnClickListener(this)
         binding.btn1.setOnClickListener(this)
         binding.btn2.setOnClickListener(this)
@@ -62,10 +64,20 @@ class GameActivity : AppCompatActivity(),View.OnClickListener {
                     }
                     GameStatus.INPROGRESS ->{
                         binding.startGameBtn.visibility =View.INVISIBLE
-                        currentPLayer +"turn"
+                        when(GameData.myID){
+                            currentPLayer -> "Your turn"
+                            else -> currentPLayer +"turn"
+                        }
+
                     }
                     GameStatus.FINISHED ->{
-                        if(winner.isNotEmpty()) winner + "Won"
+                        if(winner.isNotEmpty()) {
+                            when(GameData.myID){
+                                winner -> "You won"
+                                else ->  winner + "Won"
+                            }
+
+                        }
                         else "DRAW"
                     }
 
@@ -129,6 +141,10 @@ class GameActivity : AppCompatActivity(),View.OnClickListener {
         gameModel?.apply {
             if (gameStatus!= GameStatus.INPROGRESS){
                 Toast.makeText(applicationContext, "Game not Started",Toast.LENGTH_SHORT).show()
+                return
+            }
+            if(gameId!="-1" && currentPLayer!=GameData.myID){
+                Toast.makeText(applicationContext, "Not Your turn",Toast.LENGTH_SHORT).show()
                 return
             }
 
